@@ -70,21 +70,33 @@ After:
 
 ## Architecture
 
-Short diagram or bullet list of components. Call out where Redis and Cognee
-sit.
+Short diagram or bullet list of components. The hackathon's core pattern is
+**Redis as session memory, distilled into Cognee's permanent knowledge graph**
+— show how your wiki uses that split.
 
 ```text
-[ingest source]  ->  [cognee.remember]  ->  [knowledge graph]
-                                              |
-                                              v
-                                       [Redis cache / session]
-                                              |
-                                              v
-                                       [recall / agent loop]
-                                              |
-                                              v
-                                       [feedback -> improve]
+[ingest / agent turns]
+        |
+        v
+[ Redis  — session memory ]   <- hot, per-conversation
+        |
+        | distillation (what gets promoted? how?)
+        v
+[ Cognee — permanent graph ]  <- durable, cross-session
+        |
+        v
+[ recall / agent loop ]
+        |
+        v
+[ feedback -> improve ]
 ```
+
+### Redis-as-session-memory
+
+- What the agent writes into Redis (raw turns, intermediate observations, ...):
+- How and when content is distilled into the graph:
+- What stays in Redis vs. what gets promoted:
+- How distillation quality improved between baseline and improved run:
 
 ## Agents / Skills (if any)
 

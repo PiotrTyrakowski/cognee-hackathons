@@ -26,6 +26,56 @@ three base operations:
 The goal is not just retrieval — it is a wiki that gets smarter the more it
 is used.
 
+## Memory Architecture — Where Redis Fits
+
+Your wiki runs on a **two-tier memory** model:
+
+```text
+                    [ agent / user ]
+                          │
+                          ▼
+          ┌─────────────────────────────────┐
+          │  Redis — session memory          │   fast, ephemeral
+          │  (working scratchpad, recent     │   per-conversation
+          │   conversations, raw events)     │
+          └────────────────┬─────────────────┘
+                           │  distillation
+                           ▼
+          ┌─────────────────────────────────┐
+          │  Cognee — permanent memory       │   structured, durable
+          │  (knowledge graph, embeddings,   │   cross-session
+          │   skills, summaries)             │
+          └─────────────────────────────────┘
+```
+
+- **Redis is the agent's session memory.** The agent loads recent data into
+  Redis as it works: raw events, user turns, intermediate observations. This
+  is the hot, fast scratchpad.
+- **Cognee is the permanent memory.** Session content is distilled into the
+  knowledge graph — entities, relationships, summaries, and skills — so it
+  can be recalled across sessions and refined over time.
+- **The self-improvement loop lives in this distillation step.** What gets
+  promoted from Redis into the graph, how it's structured, and how feedback
+  rewrites it, is the core of your wiki design.
+
+In code, this maps directly onto cognee's `session_id` parameter:
+
+```python
+# Goes to Redis session memory — fast cache, syncs to graph in background
+await cognee.remember("user just asked about retention", session_id="chat_1")
+
+# Goes straight to the permanent knowledge graph
+await cognee.remember("Retention is calculated as ...")
+
+# Recall queries session memory first, falls through to the graph
+await cognee.recall("what did the user ask?", session_id="chat_1")
+```
+
+**This Redis-as-session-memory pattern is the core piece of the hackathon.**
+Judges will want to see how you use it: what your agent puts into session
+memory, how it decides what to distill into the graph, and how distillation
+quality improves run over run.
+
 ## Prizes — $1,500+ Cash Pool
 
 | Place | Prize |
@@ -77,7 +127,12 @@ export LLM_API_KEY="your-openai-key"
 Or copy [`.env.template`](https://github.com/topoteretes/cognee/blob/main/.env.template)
 from the cognee repo to a local `.env` and fill it in.
 
-### 3. Start Redis
+### 3. Start Redis (session memory)
+
+Redis is the **session-memory layer** — the fast scratchpad your agent writes
+into during a conversation, before content is distilled into the permanent
+graph. Cognee picks it up automatically when `REDIS_URL` is set and any
+`cognee.remember(..., session_id=...)` call routes there.
 
 ```bash
 docker run -p 6379:6379 redis:latest
