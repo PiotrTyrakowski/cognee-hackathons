@@ -3,7 +3,7 @@
 ## Team
 
 - Team name: Cinegraph
-- Participants: Piotr Tyrakowski, Michał Zajączkowski
+- Participants: Piotr Tyrakowski, Michał Zajączkowski, Łukasz Kryczka
 - Wiki / project name: **Cinegraph** — an editor agent that learns from the videos it tries to imitate
 
 ## Wiki Overview
