@@ -282,6 +282,7 @@ docker exec llmwiki-redis redis-cli FT.INFO llmwiki:clip-vectors | head -20
 
 ## Demo
 
+- **🎬 Video walkthrough:** https://youtu.be/H3fIXsQ9GVA
 - Live demo: 3-minute walkthrough during the finals (5:00 PM slot).
   Slides at `slides/index.html` (Reveal.js).
 - 3-minute pitch outline:
@@ -293,14 +294,17 @@ docker exec llmwiki-redis redis-cli FT.INFO llmwiki:clip-vectors | head -20
                     → attempt v2. Watch the F1 score climb and the
                     SKILL.md cards on localhost:8002 rewrite themselves.
 3. What Cognee does — permanent SKILL.md graph + SkillRunEntry +
-                    improve_skill(apply=True). Propose, then commit.
-4. What Redis does — session memory, RediSearch vector index, streams,
-                    pub/sub. The hot nervous system of every run.
+                    improve_skill(apply=True). Propose, then commit;
+                    next run reads the rewrite back via cognee.recall.
+4. What Redis does — session memory (via cognee session_id), RediSearch
+                    HNSW vector index over source clips, and the durable
+                    event stream the live viz reads from.
 5. Close          — wiki, not weights. Same agent, smarter every run.
 ```
 
 ## Links
 
+- **Video walkthrough:** https://youtu.be/H3fIXsQ9GVA
 - Repo: https://github.com/PiotrTyrakowski/LLM-Wiki-Hackaton
 - Slides / writeup: `slides/index.html` (Reveal.js, included in repo)
 - Live event stream proof: `docker exec llmwiki-redis redis-cli XREVRANGE llmwiki:events + - COUNT 30`
